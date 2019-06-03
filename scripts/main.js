@@ -217,6 +217,8 @@ function init(){
     
     function drawMap(json, rainortemp){
         console.log("drawmap")
+
+        //get State mean function
         function getStateMeanWithStateName(StateName){
             var mean = 0;
             for(i=0;i<totalMeanForEveryStateInAYearArray.length;i++){
@@ -231,7 +233,8 @@ function init(){
             }
             return mean;
         }
-
+        
+        //draw map
         svg.selectAll("path")
             .data(json.features)
             .enter()
@@ -273,7 +276,7 @@ function init(){
                 tooltip.style("display", "none");
             });
 
-        //draw circles
+        //draw circles/points
         svg.selectAll("circle")
             .data(dataArray)
             .enter().append("circle")
@@ -321,7 +324,7 @@ function init(){
         svg.select(".legendQuant")
             .call(legend);
         
-        //slider function
+        //draw slider function
         var boolExecuted = true;
         var sliderTime = d3.sliderBottom()
                         .min(d3.min(dataTime))
@@ -498,91 +501,15 @@ function init(){
             .y(function(d) { return yScale(d.Total); })
             .curve(d3.curveMonotoneX)
 
-        // var line_WA = d3.line()
-        //     .defined(d => !isNaN(d.WA_value))
-        //     .x(function(d) { return xScale(parseTime(d.year)); })
-        //     .y(function(d) { return yScale(d.WA_value); })
-        //     .curve(d3.curveMonotoneX)
-
-        // var line_NT = d3.line()
-        //     .defined(d => !isNaN(d.NT_value))
-        //     .x(function(d) { return xScale(parseTime(d.year)); })
-        //     .y(function(d) { return yScale(d.NT_value); })
-        //     .curve(d3.curveMonotoneX);
-
-        // var line_SA = d3.line()
-        //     .defined(d => !isNaN(d.SA_value))
-        //     .x(function(d) { return xScale(parseTime(d.year)); })
-        //     .y(function(d) { return yScale(d.SA_value); })
-        //     .curve(d3.curveMonotoneX);
-
-        // var line_QLD = d3.line()
-        //     .defined(d => !isNaN(d.QLD_value))
-        //     .x(function(d) { return xScale(parseTime(d.year)); })
-        //     .y(function(d) { return yScale(d.QLD_value); })
-        //     .curve(d3.curveMonotoneX);
-
-        // var line_NSW = d3.line()
-        //     .defined(d => !isNaN(d.NSW_value))
-        //     .x(function(d) { return xScale(parseTime(d.year)); })
-        //     .y(function(d) { return yScale(d.NSW_value); })
-        //     .curve(d3.curveMonotoneX)
-
-        // var line_VIC = d3.line()
-        //     .defined(d => !isNaN(d.VIC_value))
-        //     .x(function(d) { return xScale(parseTime(d.year)); })
-        //     .y(function(d) { return yScale(d.VIC_value); })
-        //     .curve(d3.curveMonotoneX)
-
-        // var line_TAS = d3.line()
-        //     .defined(d => !isNaN(d.TAS_value))
-        //     .x(function(d) { return xScale(parseTime(d.year)); })
-        //     .y(function(d) { return yScale(d.TAS_value); })
-        //     .curve(d3.curveMonotoneX)
-            
+        
+        //draw line chart 
         svg.append("path")
             .datum(allStatesMeanArray)
             .attr("class", "line") 
             .attr("d", line_total)    
-            .attr("stroke", "orange"); 
-
-        // svg.append("path")
-        //     .datum(allStatesMeanArray)
-        //     .attr("class", "line") 
-        //     .attr("d", line_NT)    
-        //     .attr("stroke", "green"); 
-
-        // svg.append("path")
-        //     .datum(allStatesMeanArray)
-        //     .attr("class", "line") 
-        //     .attr("d", line_SA)    
-        //     .attr("stroke", "red"); 
-
-        // svg.append("path")
-        //     .datum(allStatesMeanArray)
-        //     .attr("class", "line") 
-        //     .attr("d", line_QLD)    
-        //     .attr("stroke", "yellow"); 
-
-        // svg.append("path")
-        //     .datum(allStatesMeanArray)
-        //     .attr("class", "line") 
-        //     .attr("d", line_NSW)    
-        //     .attr("stroke", "grey"); 
-
-        // svg.append("path")
-        //     .datum(allStatesMeanArray)
-        //     .attr("class", "line") 
-        //     .attr("d", line_VIC)    
-        //     .attr("stroke", "brown"); 
-
-        // svg.append("path")
-        //     .datum(allStatesMeanArray)
-        //     .attr("class", "line") 
-        //     .attr("d", line_TAS)    
-        //     .attr("stroke", "pink"); 
+            .attr("stroke", "orange");
     
-        
+        //draw line chart data point
         svg.selectAll(".dot")
             .data(allStatesMeanArray.filter(function(d){
                 return !isNaN(d.Total);
