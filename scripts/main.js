@@ -98,7 +98,7 @@ function init(){
                 csvdata = temperaturedata;
                 resetMapDataWithYear(startYear, csvdata);
 
-                drawMap(json);
+                drawMap(json, rainTrueTempFalse);
 
                 allStatesMeanArray = new Array();
                 getAllStatesMean(csvdata);
@@ -127,7 +127,7 @@ function init(){
                 csvdata = rainfalldata;
                 resetMapDataWithYear(startYear, csvdata);  
 
-                drawMap(json);
+                drawMap(json, rainTrueTempFalse);
 
                 getAllStatesMean(csvdata);
                 drawLineChart(rainTrueTempFalse);
