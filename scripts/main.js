@@ -14,7 +14,7 @@ function init(){
     var svg;
     
     // create svg function
-    function createMapSVG(){
+    function createSvgMap(){
         svg = d3.select("#chart")
         .append("svg")
         .attr('viewBox', '0 0 960 600')
@@ -29,80 +29,82 @@ function init(){
     var tooltip = d3.select("div.tooltip");
 
     //states name
-    var statesAcro = ["WA", "NT", "SA", "QLD", "NSW", "VIC", "TAS", "ACT"]
-    var statesFull = ["Western Australia", "Northern Territory", "South Australia", "Queensland", "New South Wales", "Victoria", "Tasmania", "Australian Capital Territory"]
+    var AU_States_Acronyms_Array = ["WA", "NT", "SA", "QLD", "NSW", "VIC", "TAS", "ACT"]
+    var AU_States_Full_Name_Array = ["Western Australia", "Northern Territory", "South Australia", "Queensland", "New South Wales", "Victoria", "Tasmania", "Australian Capital Territory"]
 
-    var startYear;
-    var endYear;
-    var dataPeriod;
+    var start_year;
+    var end_year;
+    var year_period;
     var dataTime;
     // set dataTime function 
     function setDataTimeDuration(){
-        dataTime = d3.range(0, dataPeriod+2).map(function(d) {
-            return new Date(startYear + d, 1, 1);
+        dataTime = d3.range(0, year_period+2).map(function(d) {
+            return new Date(start_year + d, 1, 1);
         });
     }
 
     // Circles data Array initialize
-    var dataArray = new Array();
+    var sites = new Array();
                     
     // State total value Initiailize
-    var totalMeanForEveryStateInAYearArray = new Array();
-    var allStatesMeanArray = new Array();
+    var states = new Array();
+
+    // Australia yearly mean readings
+    var australia_mean_readings = new Array();
         
     //chosen csv data
-    var csvdata;
+    var csv_data;
 
     //rain or temp / true or false
-    var rainTrueTempFalse = true;
+    var rain_or_temp_bool = true;
 
-    d3.csv("data/PRCPHQ.csv").then(function(rainfalldata){
-    d3.csv("data/tmeanahq.csv").then(function(temperaturedata){
+    d3.csv("data/PRCPHQ.csv").then(function(rainfall_data){
+    d3.csv("data/tmeanahq.csv").then(function(temperature_data){
         d3.json("data/STE_2016_AUST.json").then(function(json){
             
             //  Default options = rainfall
-            csvdata = rainfalldata
-            createMapSVG();
-            rainTrueTempFalse = true;
+            csv_data = rainfall_data
+            createSvgMap();
+            rain_or_temp_bool = true;
              
-            startYear = 1863;
-            endYear = 2018;
-            dataPeriod = endYear - startYear;
-            resetMapDataWithYear(startYear, csvdata)
+            start_year = 1863;
+            end_year = 2018;
+            year_period = end_year - start_year;
+
+            resetStatesAndSitesWithYear(start_year, csv_data)
             setDataTimeDuration();
 
-            drawMap(json, rainTrueTempFalse);
+            drawMap(json, rain_or_temp_bool);
 
-            getAllStatesMean(csvdata);
-            drawLineChart(rainTrueTempFalse);
-            // console.log(totalMeanForEveryStateInAYearArray)
-            // console.log(dataArray)
+            //draw line chart
+            getAllStatesMean(csv_data);
+            drawLineChart(rain_or_temp_bool);
             
             //button temperature
             d3.select("#btn_temp").on("click", function(){
                 console.log("temp clicked")
-                rainTrueTempFalse = false;
+                rain_or_temp_bool = false;
                 d3.selectAll("#title").html("Australia Temperature 1910-2012")
                 removeSVG();
-                createMapSVG();
+                createSvgMap();
 
                 color = d3.scaleQuantize() 
                         .domain([8,30])                
                         .range(['#313695','#4575b4','#74add1','#abd9e9','#e0f3f8','#ffffbf','#fee090','#fdae61','#f46d43','#d73027','#a50026']);
                     
-                startYear = 1910
-                endYear = 2011;
-                dataPeriod = endYear - startYear;
+                start_year = 1910
+                end_year = 2011;
+                year_period = end_year - start_year;
                 setDataTimeDuration();
 
-                csvdata = temperaturedata;
-                resetMapDataWithYear(startYear, csvdata);
+                csv_data = temperature_data;
+                resetStatesAndSitesWithYear(start_year, csv_data);
 
-                drawMap(json, rainTrueTempFalse);
+                drawMap(json, rain_or_temp_bool);
 
-                allStatesMeanArray = new Array();
-                getAllStatesMean(csvdata);
-                drawLineChart(rainTrueTempFalse);
+                australia_mean_readings = new Array();
+                getAllStatesMean(csv_data);
+                drawLineChart(rain_or_temp_bool);
                 // console.log(totalMeanForEveryStateInAYearArray)
                 // console.log(dataArray)
             })
@@ -110,27 +112,28 @@ function init(){
             //button rainfall
             d3.select("#btn_rain").on("click", function(){
                 console.log("rain clicked")
-                rainTrueTempFalse = true;
+                rain_or_temp_bool = true;
                 d3.select("#title").html("Australia Rainfall 1863-2018")
                 removeSVG();
-                createMapSVG();
+                createSvgMap();
 
                 color = d3.scaleQuantize() 
                         .domain([0,1200])                
                         .range(['#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695']);
                     
-                startYear = 1863;
-                endYear = 2018;
-                dataPeriod = endYear - startYear;
+                start_year = 1863;
+                end_year = 2018;
+                year_period = end_year - start_year;
                 setDataTimeDuration();
 
-                csvdata = rainfalldata;
-                resetMapDataWithYear(startYear, csvdata);  
+                csv_data = rainfall_data;
+                resetStatesAndSitesWithYear(start_year, csv_data);  
 
-                drawMap(json, rainTrueTempFalse);
+                drawMap(json, rain_or_temp_bool);
+                australia_mean_readings = new Array();
 
-                getAllStatesMean(csvdata);
-                drawLineChart(rainTrueTempFalse);
+                getAllStatesMean(csv_data);
+                drawLineChart(rain_or_temp_bool);
                 // console.log(totalMeanForEveryStateInAYearArray)
                 // console.log(dataArray)
             })
@@ -147,20 +150,20 @@ function init(){
     })
 
     //Reset All Rain Data With Year Function
-    function resetMapDataWithYear(year, data){
+    function resetStatesAndSitesWithYear(year, data){
         //Reset Arrays
-        dataArray = new Array();
-        totalMeanForEveryStateInAYearArray = new Array();
+        sites = new Array();
+        states = new Array();
 
         //populate states
-        statesFull.forEach(state => {
+        AU_States_Full_Name_Array.forEach(state => {
             var stateObject = new Object();
             stateObject.state = state;
             stateObject.value = 0;
             stateObject.count = 0;
             stateObject.mean = 0;
 
-            totalMeanForEveryStateInAYearArray.push(stateObject);
+            states.push(stateObject);
         }) 
         
         for(j = 0; j < data.length; j++){
@@ -181,9 +184,9 @@ function init(){
 
                     var siteState = "";
                     //convert state acronyms to full names
-                    for(k=0; k<statesAcro.length; k++){
-                        if(data[j].State == statesAcro[k]){
-                            siteState = statesFull[k];
+                    for(k=0; k<AU_States_Acronyms_Array.length; k++){
+                        if(data[j].State == AU_States_Acronyms_Array[k]){
+                            siteState = AU_States_Full_Name_Array[k];
                             break;
                         }     
                     }
@@ -196,11 +199,11 @@ function init(){
                     dataObject.siteLat =  siteLat;
                     dataObject.siteLong = siteLon;
                     
-                    dataArray.push(dataObject);
+                    sites.push(dataObject);
 
 
                     // Gather all rainfall value for each state
-                    totalMeanForEveryStateInAYearArray.forEach(state => {
+                    states.forEach(state => {
                         if(state.state == siteState){
                             state.value += siteValue;
                             state.count += 1;
@@ -209,7 +212,7 @@ function init(){
                 }
             }  
         }
-        totalMeanForEveryStateInAYearArray.forEach(state => {
+        states.forEach(state => {
             state.mean = state.value / state.count;
         })
              
@@ -219,11 +222,11 @@ function init(){
         console.log("drawmap")
 
         //get State mean function
-        function getStateMeanWithStateName(StateName){
+        function getStateMeanWithStateName(stateName){
             var mean = 0;
-            for(i=0;i<totalMeanForEveryStateInAYearArray.length;i++){
-                state = totalMeanForEveryStateInAYearArray[i];
-                if(StateName == state.state){
+            for(i=0;i<states.length;i++){
+                state = states[i];
+                if(stateName == state.state){
                     mean = state.mean;
                     if(isNaN(mean))
                         mean = 0;
@@ -278,7 +281,7 @@ function init(){
 
         //draw circles/points
         svg.selectAll("circle")
-            .data(dataArray)
+            .data(sites)
             .enter().append("circle")
             .attr("cx", function(d){
                 return projection([d.siteLong, d.siteLat])[0];
@@ -332,7 +335,7 @@ function init(){
                         .step(1000 * 60 * 60 * 24 * 365)
                         .width(1800)
                         .tickFormat(d3.timeFormat('%Y'))
-                        .default(new Date(startYear, 1, 1))
+                        .default(new Date(start_year, 1, 1))
                         .on('onchange', val => {
                             d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
                             // console.log("sliderChanged")
@@ -340,9 +343,9 @@ function init(){
 
                             if(!boolExecuted){
                                 // console.log("slider data executed")
-                                resetMapDataWithYear(d3.timeFormat('%Y')(val),csvdata);
+                                resetStatesAndSitesWithYear(d3.timeFormat('%Y')(val),csv_data);
                                 
-                                statesFull.forEach(function(state){
+                                AU_States_Full_Name_Array.forEach(function(state){
                                     stateNoSpace = state.replace(/\s+/g, '')
                                     svg.select("."+stateNoSpace)
                                         .attr("fill",function(){
@@ -357,7 +360,7 @@ function init(){
                                 svg.selectAll("circle").remove();
 
                                 svg.selectAll("circle")
-                                    .data(dataArray)
+                                    .data(sites)
                                     .enter()
                                     .append("circle")
                                     .attr("cx", function(d){
@@ -397,7 +400,7 @@ function init(){
     }
 
     function getAllStatesMean(csvdata){
-        for(i=startYear;i<endYear+1;i++){
+        for(i=start_year;i<end_year+1;i++){
             var statesData = new Object();
             var year = i;
             var WA_value = 0, NT_value = 0, SA_value = 0, QLD_value = 0, NSW_value = 0, VIC_value = 0, TAS_value = 0;
@@ -451,13 +454,16 @@ function init(){
             statesData.VIC_value = VIC_value / VIC_count;
             statesData.TAS_value = TAS_value / TAS_count;
             statesData.Total = (statesData.WA_value+statesData.NT_value+statesData.SA_value+statesData.QLD_value+statesData.NSW_value+statesData.VIC_value+statesData.TAS_value)/7
-            allStatesMeanArray.push(statesData);
+            australia_mean_readings.push(statesData);
+            
         }
-        console.log(allStatesMeanArray);
     }
 
     
     function drawLineChart(rainortemp){
+        
+
+
         var height = 400;
         var parseTime = d3.timeParse("%Y");
 
@@ -469,7 +475,7 @@ function init(){
         }
            
         var xScale = d3.scaleTime()
-            .domain([parseTime(startYear), parseTime(endYear)   ]) // input
+            .domain([parseTime(start_year), parseTime(end_year)   ]) // input
             .range([0, 900]); // output
         
         var yScale = d3.scaleLinear()
@@ -504,14 +510,14 @@ function init(){
         
         //draw line chart 
         svg.append("path")
-            .datum(allStatesMeanArray)
+            .datum(australia_mean_readings)
             .attr("class", "line") 
             .attr("d", line_total)    
             .attr("stroke", "orange");
     
         //draw line chart data point
         svg.selectAll(".dot")
-            .data(allStatesMeanArray.filter(function(d){
+            .data(australia_mean_readings.filter(function(d){
                 return !isNaN(d.Total);
             }))
             .enter().append("circle")
@@ -544,37 +550,3 @@ function init(){
 }
 
 window.onload = init;
-
-// //To get all states names for each site
-// d3.csv("data/tmeanahq.csv").then(function(data){
-//     var siteUrlArray = new Array();
-//     var stateOutput = new Array();
-    
-//     for(j = 0; j < data.length; j++){
-//         siteLat = data[j].Lat
-//         siteLong = data[j].Long
-//         var url = 'https://dev.virtualearth.net/REST/v1/Locations/'+ siteLat+','+siteLong+'?key=ArMBRxzRoTaNv7ZuNEFPD9sbESASTDlvUOTi2y8rK8ZZCBz4Hy8b-KE8-NYuWnKq';
-//         siteUrlArray.push(url)
-//     }
-//     console.log(siteUrlArray)
-
-//     async function processState(){
-//         for(i=0; i<siteUrlArray.length;i++){
-//             await fetch(siteUrlArray[i])
-//             .then(function(response){
-//                 return response.json();
-//             })
-//             .then(function(myJson){
-//                 console.log(siteUrlArray[i])
-//                 if(myJson.resourceSets[0].estimatedTotal == 0){
-//                     stateOutput.push(siteUrlArray[i])
-//                 }else{
-//                     stateOutput.push(myJson.resourceSets[0].resources[0].address.adminDistrict)
-//                 }
-//             })
-//             .catch(err => { throw err });               
-//         }
-//         console.log(stateOutput);
-//     }
-//     processState();
-// })
