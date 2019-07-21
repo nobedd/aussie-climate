@@ -10,5 +10,5 @@ Temperature/Rainfall data: [Bureau of Meteorology Australia (BOM)](http://www.bo
 * [d3-simple-slider](https://github.com/johnwalley/d3-simple-slider)
 * [d3-legend](https://github.com/susielu/d3-legend)
 
-# Acknownlegement 
+# Acknowledgement
 [Decline of Acid Rain in the US](https://datasciencetexts.com/diversions/us_acid_rain.html)
